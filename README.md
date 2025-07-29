@@ -1,184 +1,188 @@
-# 玄関セキュリティシステム
+# Entry Security Camera System
 
-Raspberry PiとUSBカメラを用いた玄関監視システムです。YOLOによる人物検出で自動録画を行い、検出前後の映像をUSBメモリに保存します。
+A doorstep monitoring system using Raspberry Pi and USB camera. Features automatic recording with YOLO person detection, saving video clips before and after detection to USB storage.
 
-## 📋 概要
+## 📋 Overview
 
-このプロジェクトは **Python初学者向けの実践的な学習教材** として設計されています。AI・IoT・画像処理の基礎を1つのアプリケーションで体験できます。
+This project is designed as a **practical learning material for Python beginners**. Experience the fundamentals of AI, IoT, and image processing in a single application.
 
-### 主な機能
-- 🎥 USBカメラによるリアルタイム映像監視
-- 🤖 YOLOv5による人物検出
-- 📹 検出前後5秒を含む自動録画
-- 💾 USBメモリへの動画保存
-- 📊 リアルタイムステータス表示
+### Key Features
+- 🎥 Real-time video monitoring with USB camera
+- 🤖 Person detection using YOLOv5
+- 📹 Automatic recording (5 seconds before/after detection)
+- 💾 Video storage to USB drive
+- 📊 Real-time status display
 
-## 🛠️ システム要件
+## 🛠️ System Requirements
 
-### ハードウェア
-- Raspberry Pi 4 または 5
-- USBカメラ（UVC対応）
-- USBメモリ（FAT32またはexFAT形式）
+### Hardware
+- Raspberry Pi 4 or 5
+- USB Camera (UVC compatible)
+- USB Drive (FAT32 or exFAT format)
 
-### ソフトウェア
-- Python 3.7以上
-- Raspberry Pi OS（推奨）
+### Software
+- Python 3.7+
+- Raspberry Pi OS (recommended)
 
-## 📦 インストール
+## 📦 Installation
 
-### 1. 必要なライブラリのインストール
+### 1. Install Required Libraries
 
 ```bash
-# 基本ライブラリ
+# Basic libraries
 pip install opencv-python
 
-# AI機能（YOLOv5）用ライブラリ
+# AI functionality (YOLOv5) libraries
 pip install torch torchvision ultralytics
 ```
 
-### 2. プロジェクトのダウンロード
+### 2. Clone the Project
 
 ```bash
-git clone <このリポジトリのURL>
+git clone https://github.com/Murasan201/entry-security-cam-pi.git
 cd entry-security-cam-pi
 ```
 
-### 3. USBメモリの準備
+### 3. Prepare USB Drive
 
-USBメモリをFAT32またはexFAT形式でフォーマットし、Raspberry Piに接続してください。
+Format your USB drive to FAT32 or exFAT and connect it to the Raspberry Pi.
 
-## 🚀 使用方法
+## 🚀 Usage
 
-### 基本的な実行
+### Basic Execution
 
 ```bash
 python main.py
 ```
 
-### カメラインデックスを指定して実行
+### Specify Camera Index
 
 ```bash
-# カメラが複数接続されている場合
+# When multiple cameras are connected
 python main.py 1
 ```
 
-### 実行中の操作
+### Runtime Controls
 
-- **Ctrl+C**: システム停止
-- ターミナルにリアルタイムステータスが表示されます
+- **Ctrl+C**: Stop system
+- Real-time status is displayed in terminal
 
-## 📁 ファイル構成
+## 📁 File Structure
 
 ```
 entry-security-cam-pi/
-├── main.py                 # メインスクリプト（全機能を含む）
-├── models/                 # YOLOモデル格納ディレクトリ（オプション）
-│   └── yolov5n.pt         # カスタムモデル（ある場合）
-├── recordings/             # ローカル保存ディレクトリ（USBなし時）
-├── README.md              # このファイル
-├── 要件定義書.md           # 詳細仕様書
-└── LICENSE                # ライセンス
+├── main.py                 # Main script (contains all functionality)
+├── models/                 # YOLO model directory (optional)
+│   └── yolov5n.pt         # Custom model (if available)
+├── recordings/             # Local storage directory (when USB unavailable)
+├── README.md              # This file
+├── 要件定義書.md           # Detailed specifications (Japanese)
+└── LICENSE                # License file
 ```
 
-## ⚙️ 設定
+## ⚙️ Configuration
 
-`main.py`内の`SecurityCamera`クラスで以下の設定を変更できます：
+You can modify settings in the `SecurityCamera` class within `main.py`:
 
 ```python
 camera = SecurityCamera(
-    camera_index=0,              # USBカメラのインデックス
-    buffer_seconds=5,            # 検出前の録画秒数
-    recording_after_seconds=5,   # 検出後の録画秒数
-    usb_mount_path="/media/pi"   # USBドライブのマウントパス
+    camera_index=0,              # USB camera index
+    buffer_seconds=5,            # Recording seconds before detection
+    recording_after_seconds=5,   # Recording seconds after detection
+    usb_mount_path="/media/pi"   # USB drive mount path
 )
 ```
 
-## 🎬 録画ファイル
+## 🎬 Recording Files
 
-### 保存場所
-1. **USBメモリ**: `/media/pi/[USB名]/security_recordings/`
-2. **ローカル**: `./recordings/`（USBが見つからない場合）
+### Storage Location
+1. **USB Drive**: `/media/pi/[USB_NAME]/security_recordings/`
+2. **Local**: `./recordings/` (fallback when USB not found)
 
-### ファイル名形式
+### File Naming Format
 ```
 security_YYYY-MM-DD_HH-MM-SS.mp4
-例: security_2025-07-29_15-30-45.mp4
+Example: security_2025-07-29_15-30-45.mp4
 ```
 
-## 🔧 トラブルシューティング
+## 🔧 Troubleshooting
 
-### カメラが認識されない
+### Camera Not Recognized
 
 ```bash
-# 接続されているカメラの確認
+# Check connected cameras
 ls /dev/video*
 
-# 権限の確認
+# Check permissions
 sudo usermod -a -G video $USER
 ```
 
-### YOLOライブラリのインストールエラー
+### YOLO Library Installation Error
 
 ```bash
-# PyTorchの軽量版をインストール
+# Install lightweight PyTorch
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
-# または、YOLOなしで実行（すべてのフレームを録画）
-python main.py  # YOLOなしでも動作します
+# Or run without YOLO (records all frames)
+python main.py  # Works without YOLO
 ```
 
-### USBメモリが認識されない
+### USB Drive Not Recognized
 
 ```bash
-# マウント状況の確認
+# Check mount status
 df -h
 
-# 手動マウント
+# Manual mount
 sudo mkdir /media/usb
 sudo mount /dev/sda1 /media/usb
 ```
 
-## 📚 学習ポイント
+## 📚 Learning Points
 
-このプロジェクトを通して以下を学習できます：
+This project helps you learn:
 
-1. **Python基礎**
-   - クラス設計
-   - マルチスレッド処理
-   - 例外処理
+1. **Python Fundamentals**
+   - Class design
+   - Multi-threading
+   - Exception handling
 
-2. **画像処理**
-   - OpenCVによるカメラ制御
-   - 動画ファイルの作成・保存
+2. **Image Processing**
+   - Camera control with OpenCV
+   - Video file creation and saving
 
-3. **AI活用**
-   - YOLOv5による物体検出
-   - 事前学習済みモデルの利用
+3. **AI Implementation**
+   - Object detection with YOLOv5
+   - Using pre-trained models
 
-4. **IoT開発**
-   - Raspberry Piでのリアルタイム処理
-   - 外部ストレージとの連携
+4. **IoT Development**
+   - Real-time processing on Raspberry Pi
+   - External storage integration
 
-## 🔄 拡張案
+## 🔄 Extension Ideas
 
-- **GUI化**: tkinterやPyQt5での操作画面
-- **Web UI**: Flaskによるブラウザ操作
-- **通知機能**: Slack/LINE通知
-- **クラウド連携**: AWS S3への自動アップロード
+- **GUI**: User interface with tkinter or PyQt5
+- **Web UI**: Browser-based control with Flask
+- **Notifications**: Slack/LINE integration
+- **Cloud Storage**: Automatic upload to AWS S3
 
-## 📄 ライセンス
+## 👨‍💻 Developer
 
-MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照
+**Murasan** - [https://murasan-net.com/](https://murasan-net.com/)
 
-## 🤝 貢献
+## 📄 License
 
-バグ報告や機能提案はIssueでお願いします。プルリクエストも歓迎です。
+MIT License - See [LICENSE](LICENSE) file for details
 
-## 📞 サポート
+## 🤝 Contributing
 
-技術的な質問やトラブルについては、Issueでお気軽にお聞きください。
+Bug reports and feature requests are welcome through Issues. Pull requests are also appreciated.
+
+## 📞 Support
+
+For technical questions or troubleshooting, feel free to ask through Issues.
 
 ---
 
-**🎓 Python学習教材として作成されています**  
-初学者の方は、コード内のコメントを参考に、少しずつ理解を深めていってください。
+**🎓 Created as Python Learning Material**  
+Beginners should refer to the comments in the code to gradually deepen their understanding.
